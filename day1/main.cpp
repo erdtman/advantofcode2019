@@ -30,7 +30,7 @@ int main(int argc, const char * argv[]) {
 
 	{ // Solve part one
 		int current = 0;
-		vector<int>::const_iterator itv = v_input.begin();
+		auto itv = v_input.begin();
 		while (itv != v_input.end()) {
 			current += *itv;
 			itv++;
@@ -41,7 +41,7 @@ int main(int argc, const char * argv[]) {
 	{ // Solve part two
 		int current = 0;
 		std::map<int, bool> visited;
-		vector<int>::const_iterator itv = v_input.begin();
+		auto itv = v_input.begin();
 		while (!visited[current]) {
 			visited[current] = true;
 			current += *itv;
