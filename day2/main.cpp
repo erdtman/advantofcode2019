@@ -4,83 +4,82 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <map>
 
 using namespace std;
 const int MAX_CHAR = 256;
 
 
 int main(int argc, const char * argv[]) {
-	cout << "Start" << endl;
-	string file = "C:\\Users\\elias\\code\\adventofcode2019\\input\\Day2_1.txt";
-	ifstream infile(file);
+	if (argc < 2) {
+		cout << "Usage:" << endl;
+		cout << "day1 <input>" << endl;
+ 		return 1;
+	}
 
-	int part = 2;
+	// Common data storage
+	vector<string> v_input;
 
-	string s = "";
+	{ // Read input
+		cout << "Start with input file '" << argv[1] << "'" <<std::endl;
+		ifstream infile(argv[1]);
+		string line = "";
+		while (infile >> line) {
+			// TODO should we use references or move instead of value?
+			v_input.push_back(line);
+		}
+	}
+	
+	{ // Solve part one
+		int nr_of_2 = 0;
+		int nr_of_3 = 0;
+		for(auto &line : v_input) {
+			map<char, bool> visited;
+			bool visited_2 = false;
+			bool visited_3 = false;
+			for (char& c : line) {
+				if (visited[c]) { 
+					continue; 
+				}
 
-
-	int nr_of_2 = 0;
-	int nr_of_3 = 0;
-	bool counted_2 = false;
-	bool counted_3 = false;
-
-	vector<string> v_list;
-
-	while (infile >> s) {
-		/* Part one */
-		if (part == 1) {
-			int used_char[MAX_CHAR];
-			for (int i = 0; i < MAX_CHAR; ++i) { used_char[i] = 0; }
-			counted_2 = false;
-			counted_3 = false;
-
-			for (unsigned int i = 0; i < s.length(); ++i) {
-				char c = s.at(i);
-				if (used_char[c] != 0) { continue; }
-				int n = count(s.begin(), s.end(), c);
-				if (n == 2 && !counted_2) {
+				visited[c] = true;
+				int n = count(line.begin(), line.end(), c);
+				if (n == 2 && !visited_2) {
 					++nr_of_2;
-					counted_2 = true;
-				}
-				else if (n == 3 && !counted_3) {
+					visited_2 = true;
+				} 
+				if (n == 3 && !visited_3) {
 					++nr_of_3;
-					counted_3 = true;
+					visited_3 = true;
 				}
-				++used_char[c];
+				
 			}
 		}
-		/* Part two */
-		v_list.push_back(s);
+		
+		cout << "Part one: " << nr_of_2 * nr_of_3 << endl;
 	}
-	if (part == 2){
+
+	{ // Solve part two
 		string equalpart;
 		int nr_diff = 0;
-		for (vector<string>::iterator it = v_list.begin(); it != v_list.end() && nr_diff != 1; ++it) {
-			string orig = *it;
-			cout << "Working with: " <<orig << endl;
-			for (vector<string>::iterator it_comp = it + 1; it_comp != v_list.end(); ++it_comp) {
+		
+		for (auto it = v_input.begin(); nr_diff != 1 && it != v_input.end(); ++it) {
+			string current = *it;
+			for (auto it_comp = it + 1; nr_diff != 1 && it_comp != v_input.end(); ++it_comp) {
+				string comp = *it_comp;
 				nr_diff = 0;
 				equalpart = "";
-				string comp = *it_comp;
-				//cout << orig << " compares with " << comp << endl;
-				for (unsigned int i = 0; i < orig.length(); ++i) {
-					if (orig.at(i) == comp.at(i)) {
-						equalpart.push_back(orig.at(i));
-					}
-					else {
+
+				for (int i = 0; i < current.length() && nr_diff<2; ++i) {
+					if (current[i] == comp[i]) {
+						equalpart += current[i];
+					} else {
 						++nr_diff;
-						if (nr_diff > 1) break;
 					}
-				}
-				if (nr_diff == 1) {
-					cout << "equalpart: " << equalpart << endl;
-					break;
 				}
 			}
-			//cout << "Next comparsion\n";
 		}
+		cout << "Part two: " << equalpart << endl;
 	}
-
-	if(part==1) cout << "nr_of_2 * nr_of_3: " << nr_of_2 * nr_of_3 << endl;
     return 0;
 }
